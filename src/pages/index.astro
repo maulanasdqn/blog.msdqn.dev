@@ -1,17 +1,40 @@
 ---
+import BaseLayout from "../layouts/base-layout.astro";
+import PostCard from "../components/post-card.astro";
+import { getAllPosts } from "../lib/posts";
 
+const posts = (await getAllPosts()).slice(0, 5);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="msdqn.dev" description="Personal blog about software engineering and technology.">
+  <section class="hero">
+    <h1>msdqn.dev</h1>
+    <p>Software engineering, systems, and whatever I'm thinking about.</p>
+  </section>
+
+  <section>
+    <h2 class="section-title">Recent Posts</h2>
+    {posts.map((post) => <PostCard post={post} />)}
+    {posts.length === 0 && <p class="empty">No posts yet. Check back soon.</p>}
+    <a href="/blog" class="all-posts">All posts →</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--overlay);
+    margin-bottom: 2rem;
+  }
+  .hero h1 { font-size: 2.5rem; margin-top: 0; color: var(--text); }
+  .hero p { color: var(--subtle); font-size: 1.1rem; margin-bottom: 0; }
+  .section-title {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0;
+  }
+  .all-posts { display: inline-block; margin-top: 1.5rem; color: var(--iris); font-size: 0.9rem; }
+  .empty { color: var(--muted); }
+</style>

@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../../layouts/base-layout.astro";
+import PostCard from "../../components/post-card.astro";
+import { getAllPosts, getPostsByCategory } from "../../lib/posts";
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const cats = [...new Set(posts.map((p) => p.data.category).filter(Boolean))] as string[];
+  return cats.map((category) => ({ params: { category } }));
+}
+
+const { category } = Astro.params;
+const posts = await getPostsByCategory(category);
+---
+
+<BaseLayout title={category} description={`Posts in ${category} on msdqn.dev`}>
+  <a href="/" class="back">← Home</a>
+  <h1>{category}</h1>
+  <p class="count">{posts.length} post{posts.length !== 1 ? "s" : ""}</p>
+  {posts.map((post) => <PostCard post={post} />)}
+</BaseLayout>
+
+<style>
+  .back { color: var(--muted); font-size: 0.875rem; }
+  h1 { margin-top: 0.5rem; text-transform: capitalize; }
+  .count { color: var(--muted); font-size: 0.875rem; margin-bottom: 0; }
+</style>

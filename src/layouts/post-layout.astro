@@ -1,0 +1,97 @@
+---
+import BaseLayout from "./base-layout.astro";
+import TableOfContents from "../components/table-of-contents.astro";
+import RelatedPosts from "../components/related-posts.astro";
+import type { Post } from "../lib/posts";
+import { getRelatedPosts } from "../lib/related-posts";
+import { getAllPosts } from "../lib/posts";
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  post: Post;
+  headings: Heading[];
+  readingTime?: number;
+}
+
+const { post, headings, readingTime } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, category, cover, coverAlt } = post.data;
+
+const allPosts = await getAllPosts();
+const related = getRelatedPosts(post, allPosts);
+
+const formattedDate = pubDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+const formattedUpdated = updatedDate?.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+---
+
+<BaseLayout {title} {description} image={cover} {pubDate} {updatedDate}>
+  <article>
+    <header class="post-header">
+      {category && <a href={`/categories/${category}`} class="category">{category}</a>}
+      <h1>{title}</h1>
+      <div class="post-meta">
+        <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+        {readingTime && <span>{readingTime} min read</span>}
+        {formattedUpdated && <span>Updated {formattedUpdated}</span>}
+      </div>
+      {tags.length > 0 && (
+        <div class="tags">
+          {tags.map((tag) => (
+            <a href={`/tags/${tag}`} class="tag">#{tag}</a>
+          ))}
+        </div>
+      )}
+      {cover && <img src={cover} alt={coverAlt ?? title} class="cover-image" />}
+    </header>
+
+    <TableOfContents {headings} />
+
+    <div class="prose">
+      <slot />
+    </div>
+
+    <RelatedPosts posts={related} />
+  </article>
+</BaseLayout>
+
+<style>
+  .post-header { margin-bottom: 2rem; }
+
+  .category {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--foam);
+    font-weight: 600;
+  }
+
+  h1 { margin-top: 0.5rem; margin-bottom: 0.75rem; font-size: 2rem; }
+
+  .post-meta {
+    display: flex;
+    gap: 1rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+  .tag {
+    color: var(--iris);
+    font-size: 0.875rem;
+  }
+
+  .cover-image {
+    width: 100%;
+    margin-top: 1.5rem;
+    border-radius: 8px;
+  }
+
+  .prose { line-height: 1.8; }
+</style>

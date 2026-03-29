@@ -1,0 +1,56 @@
+---
+import ThemeToggle from "./theme-toggle.astro";
+---
+
+<header>
+  <nav>
+    <a href="/" class="site-title">msdqn.dev</a>
+    <div class="nav-links">
+      <a href="/blog">Blog</a>
+      <a href="/tags">Tags</a>
+      <a href="/search">Search</a>
+      <ThemeToggle />
+    </div>
+  </nav>
+</header>
+
+<style>
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--overlay);
+    padding: 0 1.5rem;
+  }
+
+  nav {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    gap: 2rem;
+  }
+
+  .site-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .nav-links a {
+    color: var(--subtle);
+    font-size: 0.9rem;
+  }
+
+  .nav-links a:hover {
+    color: var(--text);
+    text-decoration: none;
+  }
+</style>

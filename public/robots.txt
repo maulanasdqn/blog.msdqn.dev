@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://msdqn.dev/sitemap-index.xml

@@ -1,0 +1,22 @@
+---
+import type { Post } from "../lib/posts";
+import PostCard from "./post-card.astro";
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+{posts.length > 0 && (
+  <section class="related">
+    <h2>Related Posts</h2>
+    {posts.map((post) => <PostCard post={post} />)}
+  </section>
+)}
+
+<style>
+  .related { margin-top: 3rem; }
+  h2 { margin-bottom: 0; }
+</style>

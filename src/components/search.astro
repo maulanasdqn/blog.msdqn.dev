@@ -1,0 +1,14 @@
+<div id="search-container">
+  <div id="search"></div>
+</div>
+
+<link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+<script>
+  async function initSearch() {
+    if (typeof window === "undefined") return;
+    // @ts-ignore
+    const { PagefindUI } = await import("/pagefind/pagefind-ui.js");
+    new PagefindUI({ element: "#search", showSubResults: true });
+  }
+  initSearch();
+</script>

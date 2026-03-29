@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../layouts/base-layout.astro";
+import { getAllPosts, getAllTags } from "../../lib/posts";
+
+const posts = await getAllPosts();
+const tags = getAllTags(posts);
+const sortedTags = Object.entries(tags).sort((a, b) => b[1] - a[1]);
+---
+
+<BaseLayout title="Tags" description="All tags on msdqn.dev">
+  <h1>Tags</h1>
+  <div class="tags">
+    {sortedTags.map(([tag, count]) => (
+      <a href={`/tags/${tag}`} class="tag">
+        #{tag} <span class="count">{count}</span>
+      </a>
+    ))}
+  </div>
+  {sortedTags.length === 0 && <p class="empty">No tags yet.</p>}
+</BaseLayout>
+
+<style>
+  h1 { margin-top: 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+  .tag {
+    background: var(--surface);
+    border: 1px solid var(--overlay);
+    border-radius: 20px;
+    padding: 0.4rem 0.9rem;
+    color: var(--iris);
+    font-size: 0.875rem;
+    transition: border-color 0.15s;
+  }
+  .tag:hover { border-color: var(--iris); text-decoration: none; }
+  .count { color: var(--muted); font-size: 0.75rem; }
+  .empty { color: var(--muted); }
+</style>

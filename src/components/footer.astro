@@ -1,0 +1,40 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer>
+  <div class="footer-inner">
+    <span>© {year} msdqn</span>
+    <div class="footer-links">
+      <a href="/rss.xml">RSS</a>
+      <a href="https://github.com/msdqn" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--overlay);
+    padding: 1.5rem;
+    margin-top: auto;
+  }
+
+  .footer-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .footer-links a {
+    color: var(--muted);
+  }
+</style>

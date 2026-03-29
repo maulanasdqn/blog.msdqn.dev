@@ -1,0 +1,42 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  pubDate?: Date;
+  updatedDate?: Date;
+}
+
+const { title, description, image, pubDate, updatedDate } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const siteTitle = "msdqn.dev";
+const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="canonical" href={canonicalURL} />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+
+<!-- Open Graph -->
+<meta property="og:type" content={pubDate ? "article" : "website"} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalURL} />
+{image && <meta property="og:image" content={new URL(image, Astro.site)} />}
+{pubDate && <meta property="article:published_time" content={pubDate.toISOString()} />}
+{updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} />}
+
+<!-- RSS autodiscovery -->
+<link rel="alternate" type="application/rss+xml" title={siteTitle} href="/rss.xml" />
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+<!-- Blocking theme script (no flash) -->
+<script is:inline>
+  const theme = localStorage.getItem("theme") ??
+    (window.matchMedia("(prefers-color-scheme: dark)").matches ? "moon" : "dawn");
+  document.documentElement.setAttribute("data-theme", theme);
+</script>

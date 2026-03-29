@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../../layouts/base-layout.astro";
+import PostCard from "../../components/post-card.astro";
+import { getAllPosts, getAllTags, getPostsByTag } from "../../lib/posts";
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const tags = getAllTags(posts);
+  return Object.keys(tags).map((tag) => ({ params: { tag } }));
+}
+
+const { tag } = Astro.params;
+const posts = await getPostsByTag(tag);
+---
+
+<BaseLayout title={`#${tag}`} description={`Posts tagged ${tag} on msdqn.dev`}>
+  <a href="/tags" class="back">← All tags</a>
+  <h1>#{tag}</h1>
+  <p class="count">{posts.length} post{posts.length !== 1 ? "s" : ""}</p>
+  {posts.map((post) => <PostCard post={post} />)}
+</BaseLayout>
+
+<style>
+  .back { color: var(--muted); font-size: 0.875rem; }
+  h1 { margin-top: 0.5rem; }
+  .count { color: var(--muted); font-size: 0.875rem; margin-bottom: 0; }
+</style>
