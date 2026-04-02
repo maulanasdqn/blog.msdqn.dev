@@ -7,7 +7,8 @@ export function getRelatedPosts(current: Post, all: Post[], limit = 3): Post[] {
     for (const tag of current.data.tags) {
       if (post.data.tags.includes(tag)) score += 2;
     }
-    if (current.data.category && post.data.category === current.data.category) score += 1;
+    if (current.data.category && post.data.category === current.data.category)
+      score += 1;
     return { post, score };
   });
   return scored

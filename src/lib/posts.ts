@@ -1,5 +1,5 @@
-import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
 
 export type Post = CollectionEntry<"blog">;
 
@@ -9,7 +9,9 @@ export async function getAllPosts(): Promise<Post[]> {
 }
 
 export function sortByDate(posts: Post[]): Post[] {
-  return posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+  return posts.sort(
+    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+  );
 }
 
 export async function getPostsByTag(tag: string): Promise<Post[]> {
