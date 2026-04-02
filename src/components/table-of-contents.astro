@@ -53,6 +53,56 @@ const filtered = headings.filter((h) => h.depth <= 3);
   li { margin-bottom: 0.3rem; }
   .toc-h3 { padding-left: 1rem; }
 
-  a { color: var(--subtle); }
+  a { color: var(--subtle); transition: color 0.15s; }
   a:hover { color: var(--iris); }
+
+  a.active {
+    color: var(--iris);
+    border-left: 2px solid var(--iris);
+    padding-left: 0.35rem;
+    margin-left: -0.35rem;
+  }
 </style>
+
+<script>
+  function initScrollSpy() {
+    const toc = document.querySelector(".toc");
+    if (!toc) return;
+
+    const links = Array.from(
+      toc.querySelectorAll("a[href^='#']")
+    ) as HTMLAnchorElement[];
+    if (!links.length) return;
+
+    const linkMap = new Map(
+      links.map((a) => [
+        decodeURIComponent(a.getAttribute("href")!.slice(1)),
+        a,
+      ])
+    );
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const link = linkMap.get(entry.target.id);
+          if (link) link.classList.toggle("active", entry.isIntersecting);
+        }
+      },
+      { rootMargin: "0px 0px -80% 0px", threshold: 0 }
+    );
+
+    for (const id of linkMap.keys()) {
+      const heading = document.getElementById(id);
+      if (heading) observer.observe(heading);
+    }
+
+    document.addEventListener(
+      "astro:before-swap",
+      () => observer.disconnect(),
+      { once: true }
+    );
+  }
+
+  initScrollSpy();
+  document.addEventListener("astro:after-swap", initScrollSpy);
+</script>

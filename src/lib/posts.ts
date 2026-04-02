@@ -9,7 +9,7 @@ export async function getAllPosts(): Promise<Post[]> {
 }
 
 export function sortByDate(posts: Post[]): Post[] {
-  return posts.sort(
+  return [...posts].sort(
     (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
   );
 }

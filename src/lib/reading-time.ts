@@ -10,10 +10,8 @@ export function readingTimePlugin() {
     const wordCount = text.split(/\s+/).filter(Boolean).length;
     const minutes = Math.ceil(wordCount / WORDS_PER_MINUTE);
     file.data.astro = file.data.astro ?? {};
-    (file.data.astro as Record<string, unknown>).frontmatter = {
-      ...(((file.data.astro as Record<string, unknown>)
-        .frontmatter as object) ?? {}),
-      readingTime: minutes,
-    };
+    const astro = file.data.astro as Record<string, unknown>;
+    const existing = (astro.frontmatter as Record<string, unknown>) ?? {};
+    astro.frontmatter = { ...existing, readingTime: minutes };
   };
 }

@@ -1,12 +1,14 @@
 import type { Element, Root as HastRoot, Parents, Text } from "hast";
 import type { BlockContent, PhrasingContent, Root } from "mdast";
-import { visit } from "unist-util-visit";
+import { SKIP, visit } from "unist-util-visit";
 
 const CODE_TAGS = new Set(["code", "pre"]);
+const MDAST_CODE_TYPES = new Set(["code", "inlineCode"]);
 
 export function obsidianPlugin() {
   return (tree: Root) => {
-    visit(tree, "text", (node) => {
+    visit(tree, "text", (node, _index, parent) => {
+      if (parent && MDAST_CODE_TYPES.has(parent.type)) return;
       node.value = node.value.replace(/%%.*?%%/gs, "");
     });
 
@@ -38,6 +40,7 @@ export function obsidianPlugin() {
         });
 
       parent.children.splice(index, 1, ...newNodes);
+      return [SKIP, index + newNodes.length];
     });
 
     visit(tree, "blockquote", (node, index, parent) => {
@@ -75,6 +78,7 @@ export function obsidianPlugin() {
       });
 
       parent.children.splice(index, 1, openNode, ...innerChildren, closeNode);
+      return [SKIP, index + innerChildren.length + 2];
     });
   };
 }
@@ -110,6 +114,7 @@ export function rehypeHighlight() {
         });
 
       parent.children.splice(index, 1, ...newNodes);
+      return [SKIP, index + newNodes.length];
     });
   };
 }
