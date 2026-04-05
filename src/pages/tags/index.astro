@@ -1,6 +1,6 @@
 ---
-import BaseLayout from "../../layouts/base-layout.astro";
-import { getAllPosts, getAllTags } from "../../lib/posts";
+import BaseLayout from "@/layouts/base-layout.astro";
+import { getAllPosts, getAllTags } from "@/lib/posts";
 
 const posts = await getAllPosts();
 const tags = getAllTags(posts);

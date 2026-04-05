@@ -1,10 +1,10 @@
 ---
-import BaseLayout from "./base-layout.astro";
-import TableOfContents from "../components/table-of-contents.astro";
-import RelatedPosts from "../components/related-posts.astro";
-import type { Post } from "../lib/posts";
-import { getRelatedPosts } from "../lib/related-posts";
-import { getAllPosts } from "../lib/posts";
+import BaseLayout from "@/layouts/base-layout.astro";
+import TableOfContents from "@/components/table-of-contents.astro";
+import RelatedPosts from "@/components/related-posts.astro";
+import type { Post } from "@/lib/posts";
+import { getRelatedPosts } from "@/lib/related-posts";
+import { getAllPosts } from "@/lib/posts";
 
 interface Heading {
   depth: number;
