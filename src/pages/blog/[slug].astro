@@ -1,0 +1,20 @@
+---
+import PostLayout from "@/layouts/post-layout.astro";
+import { renderMarkdown } from "@/lib/markdown";
+import { getPost, listPosts, relatedPosts } from "@/lib/posts";
+
+const post = await getPost(Astro.params.slug ?? "");
+
+if (!post) {
+  return Astro.rewrite("/404");
+}
+
+const [{ html, headings }, posts] = await Promise.all([
+  renderMarkdown(`${post.slug}:${post.updatedAt.getTime()}`, post.content),
+  listPosts(),
+]);
+---
+
+<PostLayout post={post} headings={headings} related={relatedPosts(post, posts)}>
+  <Fragment set:html={html} />
+</PostLayout>

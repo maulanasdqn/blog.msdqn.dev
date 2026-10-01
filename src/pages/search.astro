@@ -1,13 +1,58 @@
 ---
+import PostRow from "@/components/post-row.astro";
+import SectionHeading from "@/components/section-heading.astro";
 import BaseLayout from "@/layouts/base-layout.astro";
-import Search from "@/components/search.astro";
+import { searchPosts } from "@/lib/posts";
+
+const query = (Astro.url.searchParams.get("q") ?? "").trim().slice(0, 100);
+const results = query.length >= 2 ? await searchPosts(query) : [];
 ---
 
-<BaseLayout title="Search" description="Search msdqn.dev">
-  <h1>Search</h1>
-  <Search />
+<BaseLayout
+  title={query ? `Search: ${query} — Maulana Sodiqin` : "Search — Maulana Sodiqin"}
+  description="Search posts by Maulana Sodiqin."
+  noindex
+>
+  <section class="mx-auto max-w-5xl px-6 pb-24 pt-20 sm:px-8 sm:pt-28">
+    <h1
+      class="mb-10 text-5xl font-medium leading-[1.05] tracking-tight text-mono-text"
+    >
+      Search
+    </h1>
+    <form action="/search" method="get" role="search" class="mb-16 max-w-xl">
+      <label for="q" class="sr-only">Search posts</label>
+      <div class="flex border-b border-mono-line-strong focus-within:border-mono-text">
+        <input
+          id="q"
+          name="q"
+          type="search"
+          value={query}
+          minlength="2"
+          placeholder="Search posts…"
+          autocomplete="off"
+          class="w-full bg-transparent py-3 text-lg text-mono-text placeholder:text-mono-muted focus:outline-none"
+        />
+        <button
+          type="submit"
+          class="px-2 text-sm text-mono-subtle transition-colors hover:text-mono-text"
+        >
+          Search
+        </button>
+      </div>
+    </form>
+    {
+      query.length >= 2 && (
+        <>
+          <SectionHeading
+            title={`${results.length} result${results.length === 1 ? "" : "s"}`}
+          />
+          {results.length === 0 ? (
+            <p class="text-mono-subtle">Nothing matches “{query}”.</p>
+          ) : (
+            results.map((post) => <PostRow post={post} />)
+          )}
+        </>
+      )
+    }
+  </section>
 </BaseLayout>
-
-<style>
-  h1 { margin-top: 0; }
-</style>

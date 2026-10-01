@@ -1,17 +1,30 @@
 ---
 import BaseLayout from "@/layouts/base-layout.astro";
+
+Astro.response.status = 404;
 ---
 
-<BaseLayout title="404 – Not Found" description="Page not found">
-  <div class="not-found">
-    <h1>404</h1>
-    <p>This page doesn't exist.</p>
-    <a href="/">← Go home</a>
-  </div>
+<BaseLayout
+  title="Not found — Maulana Sodiqin"
+  description="This page doesn't exist."
+  noindex
+>
+  <section class="mx-auto max-w-5xl px-6 pb-32 pt-24 sm:px-8 sm:pt-32">
+    <p
+      class="mb-10 text-xs font-medium uppercase tracking-[0.14em] text-mono-muted"
+    >
+      404
+    </p>
+    <h1
+      class="max-w-3xl text-5xl font-medium leading-[1.05] tracking-tight text-mono-text"
+    >
+      This page doesn't exist.
+    </h1>
+    <a
+      href="/"
+      class="mt-10 inline-flex items-center gap-2 bg-mono-text px-5 py-3 text-sm text-mono-bg transition-colors hover:bg-mono-subtle"
+    >
+      All posts <span aria-hidden="true">&rarr;</span>
+    </a>
+  </section>
 </BaseLayout>
-
-<style>
-  .not-found { text-align: center; padding: 4rem 0; }
-  h1 { font-size: 5rem; color: var(--muted); margin-top: 0; }
-  p { color: var(--subtle); margin-bottom: 1.5rem; }
-</style>

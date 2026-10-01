@@ -1,40 +1,71 @@
 ---
+import PostRow from "@/components/post-row.astro";
+import SectionHeading from "@/components/section-heading.astro";
 import BaseLayout from "@/layouts/base-layout.astro";
-import PostCard from "@/components/post-card.astro";
-import { getAllPosts } from "@/lib/posts";
+import { listPosts } from "@/lib/posts";
+import { AUTHOR, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
-const posts = (await getAllPosts()).slice(0, 5);
+const posts = await listPosts();
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "@id": `${SITE_URL}/#blog`,
+  url: `${SITE_URL}/`,
+  name: SITE_NAME,
+  description: SITE_DESCRIPTION,
+  inLanguage: "en",
+  author: AUTHOR,
+  blogPost: posts.map((post) => ({
+    "@type": "BlogPosting",
+    headline: post.title,
+    url: `${SITE_URL}/blog/${post.slug}`,
+    datePublished: post.publishedAt.toISOString(),
+  })),
+};
 ---
 
-<BaseLayout title="msdqn.dev" description="Personal blog about software engineering and technology.">
-  <section class="hero">
-    <h1>msdqn.dev</h1>
-    <p>Software engineering, systems, and whatever I'm thinking about.</p>
+<BaseLayout
+  title={SITE_NAME}
+  description={SITE_DESCRIPTION}
+  noindex={posts.length === 0}
+  jsonLd={jsonLd}
+>
+  <section class="mx-auto max-w-5xl px-6 pb-16 pt-20 sm:px-8 sm:pt-28">
+    <p
+      class="mb-10 text-xs font-medium uppercase tracking-[0.14em] text-mono-muted"
+    >
+      Writing
+    </p>
+    <h1
+      class="max-w-3xl text-5xl font-medium leading-[1.05] tracking-tight text-mono-text sm:text-6xl"
+    >
+      Notes on building web platforms in
+      <span class="text-mono-subtle">Rust</span> and
+      <span class="text-mono-subtle">TypeScript</span>.
+    </h1>
+    <p class="mt-8 max-w-xl text-lg leading-relaxed text-mono-subtle">
+      Backend systems, browser automation, infrastructure, and what I learn
+      shipping them. By
+      <a
+        href="https://msdqn.dev"
+        class="text-mono-text underline decoration-mono-line-strong underline-offset-[6px] transition-colors hover:decoration-mono-text"
+        >Maulana Sodiqin</a
+      >.
+    </p>
   </section>
 
-  <section>
-    <h2 class="section-title">Recent Posts</h2>
-    {posts.map((post) => <PostCard post={post} />)}
-    {posts.length === 0 && <p class="empty">No posts yet. Check back soon.</p>}
-    <a href="/blog" class="all-posts">All posts →</a>
+  <section
+    class="mx-auto max-w-5xl px-6 pb-24 sm:px-8"
+    aria-labelledby="posts-heading"
+  >
+    <SectionHeading title="All posts" id="posts-heading" />
+    {
+      posts.length === 0 ? (
+        <p class="text-mono-subtle">No posts yet. Check back soon.</p>
+      ) : (
+        posts.map((post) => <PostRow post={post} />)
+      )
+    }
   </section>
 </BaseLayout>
-
-<style>
-  .hero {
-    padding: 3rem 0 2rem;
-    border-bottom: 1px solid var(--overlay);
-    margin-bottom: 2rem;
-  }
-  .hero h1 { font-size: 2.5rem; margin-top: 0; color: var(--text); }
-  .hero p { color: var(--subtle); font-size: 1.1rem; margin-bottom: 0; }
-  .section-title {
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    margin-bottom: 0;
-  }
-  .all-posts { display: inline-block; margin-top: 1.5rem; color: var(--iris); font-size: 0.9rem; }
-  .empty { color: var(--muted); }
-</style>

@@ -1,56 +1,45 @@
 ---
-import ThemeToggle from "./theme-toggle.astro";
+const path = Astro.url.pathname;
+const links = [
+  { label: "Posts", href: "/" },
+  { label: "Tags", href: "/tags" },
+  { label: "Search", href: "/search" },
+];
 ---
 
-<header>
-  <nav>
-    <a href="/" class="site-title">msdqn.dev</a>
-    <div class="nav-links">
-      <a href="/blog">Blog</a>
-      <a href="/tags">Tags</a>
-      <a href="/search">Search</a>
-      <ThemeToggle />
+<header
+  class="sticky top-0 z-50 border-b border-mono-line bg-mono-bg/85 backdrop-blur-md"
+>
+  <nav
+    class="mx-auto flex h-16 max-w-5xl items-center justify-between px-6 sm:px-8"
+    aria-label="Main navigation"
+  >
+    <a href="/" class="flex items-baseline gap-2 text-mono-text">
+      <span class="text-lg font-medium tracking-tight">Maulana Sodiqin</span>
+      <span class="text-sm text-mono-muted">/ writing</span>
+    </a>
+    <div class="flex items-center gap-5 text-sm sm:gap-7">
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            aria-current={
+              (link.href === "/" ? path === "/" : path.startsWith(link.href))
+                ? "page"
+                : undefined
+            }
+            class="text-mono-subtle transition-colors hover:text-mono-text aria-[current=page]:text-mono-text"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+      <a
+        href="https://msdqn.dev"
+        class="hidden text-mono-text underline decoration-mono-line-strong underline-offset-[6px] transition-colors hover:decoration-mono-text sm:inline"
+      >
+        msdqn.dev
+      </a>
     </div>
   </nav>
 </header>
-
-<style>
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--overlay);
-    padding: 0 1.5rem;
-  }
-
-  nav {
-    max-width: 720px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    gap: 2rem;
-  }
-
-  .site-title {
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--text);
-    letter-spacing: -0.02em;
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .nav-links a {
-    color: var(--subtle);
-    font-size: 0.9rem;
-  }
-
-  .nav-links a:hover {
-    color: var(--text);
-    text-decoration: none;
-  }
-</style>

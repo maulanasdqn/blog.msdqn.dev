@@ -1,37 +1,42 @@
 ---
+import SectionHeading from "@/components/section-heading.astro";
 import BaseLayout from "@/layouts/base-layout.astro";
-import { getAllPosts, getAllTags } from "@/lib/posts";
+import { countTags, listPosts } from "@/lib/posts";
+import { tagSlug } from "@/lib/site";
 
-const posts = await getAllPosts();
-const tags = getAllTags(posts);
-const sortedTags = Object.entries(tags).sort((a, b) => b[1] - a[1]);
+const tags = countTags(await listPosts());
 ---
 
-<BaseLayout title="Tags" description="All tags on msdqn.dev">
-  <h1>Tags</h1>
-  <div class="tags">
-    {sortedTags.map(([tag, count]) => (
-      <a href={`/tags/${tag}`} class="tag">
-        #{tag} <span class="count">{count}</span>
-      </a>
-    ))}
-  </div>
-  {sortedTags.length === 0 && <p class="empty">No tags yet.</p>}
+<BaseLayout
+  title="Tags — Maulana Sodiqin"
+  description="Browse posts by topic."
+  noindex={tags.size === 0}
+>
+  <section class="mx-auto max-w-5xl px-6 pb-24 pt-20 sm:px-8 sm:pt-28">
+    <h1
+      class="mb-16 text-5xl font-medium leading-[1.05] tracking-tight text-mono-text"
+    >
+      Tags
+    </h1>
+    <SectionHeading title={`${tags.size} topics`} />
+    {
+      tags.size === 0 ? (
+        <p class="text-mono-subtle">No tags yet.</p>
+      ) : (
+        <ul class="grid grid-cols-1 gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
+          {[...tags].map(([tag, count]) => (
+            <li class="border-b border-mono-line">
+              <a
+                href={`/tags/${tagSlug(tag)}`}
+                class="flex items-baseline justify-between py-4 text-mono-text transition-colors hover:text-mono-subtle"
+              >
+                <span>#{tag}</span>
+                <span class="text-sm text-mono-muted tabular-nums">{count}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
 </BaseLayout>
-
-<style>
-  h1 { margin-top: 0; }
-  .tags { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
-  .tag {
-    background: var(--surface);
-    border: 1px solid var(--overlay);
-    border-radius: 20px;
-    padding: 0.4rem 0.9rem;
-    color: var(--iris);
-    font-size: 0.875rem;
-    transition: border-color 0.15s;
-  }
-  .tag:hover { border-color: var(--iris); text-decoration: none; }
-  .count { color: var(--muted); font-size: 0.75rem; }
-  .empty { color: var(--muted); }
-</style>

@@ -1,43 +1,31 @@
-# Astro Starter Kit: Minimal
+# blog.msdqn.dev
 
-```sh
-pnpm create astro@latest -- --template minimal
-```
+Maulana Sodiqin's blog. Astro 6, server-rendered on Cloudflare Workers, monochrome design shared with [msdqn.dev](https://msdqn.dev).
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Content
 
-## 🚀 Project Structure
+Posts are written in the msdqn.dev CMS (`/cms/blog`) and stored in the shared D1 database `msdqn-dev` (`blog_posts` table). The blog reads them at request time through the `DB` binding, so publishing a post in the CMS makes it live immediately; no rebuild is needed.
 
-Inside of your Astro project, you'll see the following folders and files:
+Post bodies are Markdown with GFM tables and task lists, Obsidian callouts (`> [!note]`), wiki links (`[[Post title]]`), `==highlights==`, and syntax-highlighted code blocks. Only posts with `published = 1` are shown.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## Routes
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+| Path | |
+| --- | --- |
+| `/` | All posts |
+| `/blog/:slug` | Post (table of contents, related posts) |
+| `/tags`, `/tags/:tag` | Topics |
+| `/search?q=` | Full-text search over title, excerpt, content and tags |
+| `/rss.xml` | RSS feed, also read by msdqn.dev |
+| `/sitemap.xml` | Sitemap |
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Commands
 
-Any static assets, like images, can be placed in the `public/` directory.
+| Command | |
+| --- | --- |
+| `npm run dev` | Dev server; the `DB` binding uses the remote production database (read-only queries) |
+| `npm run check` | Biome and `astro check` |
+| `npm run deploy` | Build and deploy to `blog.msdqn.dev` with Wrangler |
+| `npm run types` | Regenerate `worker-configuration.d.ts` after changing `wrangler.jsonc` |
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+`vite` is pinned to 7.x through `overrides` because mixing Vite 7 and 8 breaks the Cloudflare adapter (`require_dist is not a function`).

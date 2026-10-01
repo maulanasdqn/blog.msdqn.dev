@@ -1,40 +1,31 @@
 ---
 const year = new Date().getFullYear();
+const links = [
+  { label: "RSS", href: "/rss.xml" },
+  { label: "msdqn.dev", href: "https://msdqn.dev" },
+  { label: "GitHub", href: "https://github.com/maulanasdqn" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/maulana-sodiqin/" },
+];
 ---
 
-<footer>
-  <div class="footer-inner">
-    <span>© {year} msdqn</span>
-    <div class="footer-links">
-      <a href="/rss.xml">RSS</a>
-      <a href="https://github.com/msdqn" target="_blank" rel="noopener">GitHub</a>
-    </div>
+<footer class="border-t border-mono-line">
+  <div
+    class="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-10 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-8"
+  >
+    <p class="text-mono-muted">&copy; {year} Maulana Sodiqin</p>
+    <ul class="flex flex-wrap gap-x-6 gap-y-2" aria-label="Footer links">
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="text-mono-subtle transition-colors hover:text-mono-text"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </footer>
-
-<style>
-  footer {
-    border-top: 1px solid var(--overlay);
-    padding: 1.5rem;
-    margin-top: auto;
-  }
-
-  .footer-inner {
-    max-width: 720px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--muted);
-    font-size: 0.875rem;
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 1rem;
-  }
-
-  .footer-links a {
-    color: var(--muted);
-  }
-</style>

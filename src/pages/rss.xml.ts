@@ -1,18 +1,20 @@
 import rss from "@astrojs/rss";
-import type { APIContext } from "astro";
-import { getAllPosts } from "@/lib/posts";
+import { listPosts } from "@/lib/posts";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
-export async function GET(context: APIContext) {
-  const posts = await getAllPosts();
+export const GET = async (): Promise<Response> => {
+  const posts = await listPosts();
   return rss({
-    title: "msdqn.dev",
-    description: "Personal blog about software engineering and technology.",
-    site: context.site ?? new URL("https://msdqn.dev"),
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    site: SITE_URL,
     items: posts.map((post) => ({
-      title: post.data.title,
-      description: post.data.description,
-      pubDate: post.data.pubDate,
-      link: `/blog/${post.id}`,
+      title: post.title,
+      description: post.excerpt,
+      pubDate: post.publishedAt,
+      categories: post.tags,
+      link: `/blog/${post.slug}`,
     })),
+    customData: "<language>en</language>",
   });
-}
+};

@@ -1,114 +1,143 @@
 ---
-import BaseLayout from "@/layouts/base-layout.astro";
+import PostRow from "@/components/post-row.astro";
+import SectionHeading from "@/components/section-heading.astro";
 import TableOfContents from "@/components/table-of-contents.astro";
-import RelatedPosts from "@/components/related-posts.astro";
+import BaseLayout from "@/layouts/base-layout.astro";
+import type { Heading } from "@/lib/markdown";
 import type { Post } from "@/lib/posts";
-import { getRelatedPosts } from "@/lib/related-posts";
-import { getAllPosts } from "@/lib/posts";
-
-interface Heading {
-  depth: number;
-  slug: string;
-  text: string;
-}
+import { AUTHOR, formatDate, OG_IMAGE, SITE_URL, tagSlug } from "@/lib/site";
 
 interface Props {
   post: Post;
   headings: Heading[];
-  readingTime?: number;
+  related: Post[];
 }
 
-const { post, headings, readingTime } = Astro.props;
-const { title, description, pubDate, updatedDate, tags, category, cover, coverAlt } = post.data;
+const { post, headings, related } = Astro.props;
+const url = `${SITE_URL}/blog/${post.slug}`;
+const title = post.metaTitle || `${post.title} — Maulana Sodiqin`;
+const description = post.metaDescription || post.excerpt || post.title;
+const updated = post.updatedAt.getTime() - post.publishedAt.getTime() > 86400000;
 
-const allPosts = await getAllPosts();
-const related = getRelatedPosts(post, allPosts);
-
-const formattedDate = pubDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-const formattedUpdated = updatedDate?.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "@id": `${url}#article`,
+      headline: post.title,
+      description,
+      url,
+      mainEntityOfPage: url,
+      image: OG_IMAGE,
+      datePublished: post.publishedAt.toISOString(),
+      dateModified: post.updatedAt.toISOString(),
+      keywords: post.tags.join(", "),
+      inLanguage: "en",
+      wordCount: post.content.split(/\s+/).filter(Boolean).length,
+      author: AUTHOR,
+      publisher: AUTHOR,
+      isPartOf: { "@id": `${SITE_URL}/#blog` },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Writing", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 2, name: post.title, item: url },
+      ],
+    },
+  ],
+};
 ---
 
-<BaseLayout {title} {description} image={cover} {pubDate} {updatedDate}>
-  <article>
-    <header class="post-header">
-      {category && <a href={`/categories/${category}`} class="category">{category}</a>}
-      <h1>{title}</h1>
-      <div class="post-meta">
-        <time datetime={pubDate.toISOString()}>{formattedDate}</time>
-        {readingTime && <span>{readingTime} min read</span>}
-        {formattedUpdated && <span>Updated {formattedUpdated}</span>}
+<BaseLayout
+  title={title}
+  description={description}
+  type="article"
+  publishedAt={post.publishedAt}
+  updatedAt={post.updatedAt}
+  tags={post.tags}
+  jsonLd={jsonLd}
+>
+  <article class="mx-auto max-w-5xl px-6 pb-20 pt-16 sm:px-8 sm:pt-24">
+    <header class="max-w-3xl">
+      <p
+        class="mb-8 text-xs font-medium uppercase tracking-[0.14em] text-mono-muted"
+      >
+        <a href="/" class="transition-colors hover:text-mono-text">Writing</a>
+        <span aria-hidden="true"> / </span>
+        <time datetime={post.publishedAt.toISOString()}>
+          {formatDate(post.publishedAt)}
+        </time>
+      </p>
+      <h1
+        class="text-4xl font-medium leading-[1.1] tracking-tight text-mono-text sm:text-5xl"
+      >
+        {post.title}
+      </h1>
+      {
+        post.excerpt && (
+          <p class="mt-6 text-lg leading-relaxed text-mono-subtle">
+            {post.excerpt}
+          </p>
+        )
+      }
+      <div
+        class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-mono-line py-4 text-sm text-mono-muted"
+      >
+        <span>{post.readTime} min read</span>
+        {
+          updated && (
+            <span>
+              Updated{" "}
+              <time datetime={post.updatedAt.toISOString()}>
+                {formatDate(post.updatedAt)}
+              </time>
+            </span>
+          )
+        }
+        {
+          post.tags.length > 0 && (
+            <ul class="flex flex-wrap gap-x-4 gap-y-1">
+              {post.tags.map((tag) => (
+                <li>
+                  <a
+                    href={`/tags/${tagSlug(tag)}`}
+                    class="transition-colors hover:text-mono-text"
+                  >
+                    #{tag}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
       </div>
-      {tags.length > 0 && (
-        <div class="tags">
-          {tags.map((tag) => (
-            <a href={`/tags/${tag}`} class="tag">#{tag}</a>
-          ))}
-        </div>
-      )}
-      {cover && <img src={cover} alt={coverAlt ?? title} class="cover-image" />}
     </header>
 
-    <TableOfContents {headings} />
-
-    <div class="prose">
-      <slot />
+    <div class="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_220px]">
+      <div class="prose prose-mono min-w-0 max-w-3xl">
+        <slot />
+      </div>
+      <aside class="hidden lg:block">
+        <div class="sticky top-24">
+          <TableOfContents headings={headings} />
+        </div>
+      </aside>
     </div>
-
-    <RelatedPosts posts={related} />
   </article>
+
+  {
+    related.length > 0 && (
+      <section
+        class="mx-auto max-w-5xl px-6 pb-24 sm:px-8"
+        aria-labelledby="related-heading"
+      >
+        <SectionHeading title="Related" id="related-heading" />
+        {related.map((relatedPost) => (
+          <PostRow post={relatedPost} />
+        ))}
+      </section>
+    )
+  }
 </BaseLayout>
-
-<style>
-  .post-header { margin-bottom: 2rem; }
-
-  .category {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--foam);
-    font-weight: 600;
-  }
-
-  h1 { margin-top: 0.5rem; margin-bottom: 0.75rem; font-size: 2rem; }
-
-  .post-meta {
-    display: flex;
-    gap: 1rem;
-    color: var(--muted);
-    font-size: 0.875rem;
-    margin-bottom: 0.75rem;
-    flex-wrap: wrap;
-  }
-
-  .tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-
-  .tag {
-    color: var(--iris);
-    font-size: 0.875rem;
-  }
-
-  .cover-image {
-    width: 100%;
-    margin-top: 1.5rem;
-    border-radius: 8px;
-  }
-
-  .prose {
-    --tw-prose-body: var(--text);
-    --tw-prose-headings: var(--text);
-    --tw-prose-links: var(--iris);
-    --tw-prose-bold: var(--text);
-    --tw-prose-counters: var(--muted);
-    --tw-prose-bullets: var(--muted);
-    --tw-prose-hr: var(--overlay);
-    --tw-prose-quotes: var(--subtle);
-    --tw-prose-quote-borders: var(--iris);
-    --tw-prose-captions: var(--muted);
-    --tw-prose-code: var(--foam);
-    --tw-prose-pre-code: var(--text);
-    --tw-prose-pre-bg: var(--surface);
-    --tw-prose-th-borders: var(--overlay);
-    --tw-prose-td-borders: var(--overlay);
-    line-height: 1.8;
-  }
-</style>

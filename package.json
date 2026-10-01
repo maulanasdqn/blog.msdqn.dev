@@ -9,25 +9,46 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "postbuild": "pagefind --site dist",
     "astro": "astro",
     "lint": "biome check .",
-    "lint:fix": "biome check --write ."
+    "lint:fix": "biome check --write .",
+    "deploy": "astro build && wrangler deploy",
+    "check": "biome check . && astro check",
+    "types": "wrangler types"
   },
   "dependencies": {
-    "@astrojs/rss": "^4.0.18",
-    "@astrojs/sitemap": "^3.7.2",
-    "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.2.2",
-    "astro": "^6.1.1",
+    "@astrojs/cloudflare": "^13.7.0",
+    "@astrojs/rss": "^4.0.19",
+    "@fontsource-variable/onest": "^5.3.1",
+    "@shikijs/langs": "^4.5.0",
+    "@shikijs/rehype": "^4.5.0",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^6.4.8",
+    "hast-util-to-string": "^3.0.1",
     "mdast-util-to-string": "^4.0.0",
-    "pagefind": "^1.4.0",
-    "remark-wiki-link": "^2.0.1",
-    "tailwindcss": "^4.2.2",
-    "unist-util-visit": "^5.1.0"
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-raw": "^7.0.0",
+    "rehype-slug": "^6.0.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "shiki": "^4.5.0",
+    "tailwindcss": "^4.3.3",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0",
+    "vfile": "^6.0.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.9",
-    "@types/hast": "^3.0.4"
+    "@astrojs/check": "^0.9.10",
+    "@biomejs/biome": "^2.5.15",
+    "@types/hast": "^3.0.5",
+    "@types/mdast": "^4.0.4",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.145.0"
+  },
+  "overrides": {
+    "vite": "^7.3.6"
   }
 }

@@ -1,3 +1,5 @@
 User-agent: *
 Allow: /
-Sitemap: https://msdqn.dev/sitemap-index.xml
+Disallow: /search
+
+Sitemap: https://blog.msdqn.dev/sitemap.xml

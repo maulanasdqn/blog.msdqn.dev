@@ -1,0 +1,17 @@
+---
+interface Props {
+  title: string;
+  id?: string;
+}
+
+const { title, id } = Astro.props;
+---
+
+<div class="mb-10 border-t border-mono-line pt-6">
+  <h2
+    id={id}
+    class="text-xs font-medium uppercase tracking-[0.14em] text-mono-subtle"
+  >
+    {title}
+  </h2>
+</div>

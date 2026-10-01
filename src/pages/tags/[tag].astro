@@ -1,27 +1,38 @@
 ---
+import PostRow from "@/components/post-row.astro";
+import SectionHeading from "@/components/section-heading.astro";
 import BaseLayout from "@/layouts/base-layout.astro";
-import PostCard from "@/components/post-card.astro";
-import { getAllPosts, getAllTags, getPostsByTag } from "@/lib/posts";
+import { listPosts, postsWithTag } from "@/lib/posts";
+import { tagSlug } from "@/lib/site";
 
-export async function getStaticPaths() {
-  const posts = await getAllPosts();
-  const tags = getAllTags(posts);
-  return Object.keys(tags).map((tag) => ({ params: { tag } }));
+const slug = Astro.params.tag ?? "";
+const posts = postsWithTag(await listPosts(), slug);
+
+if (posts.length === 0) {
+  return Astro.rewrite("/404");
 }
 
-const { tag } = Astro.params;
-const posts = await getPostsByTag(tag);
+const label = posts[0].tags.find((tag) => tagSlug(tag) === slug) ?? slug;
 ---
 
-<BaseLayout title={`#${tag}`} description={`Posts tagged ${tag} on msdqn.dev`}>
-  <a href="/tags" class="back">← All tags</a>
-  <h1>#{tag}</h1>
-  <p class="count">{posts.length} post{posts.length !== 1 ? "s" : ""}</p>
-  {posts.map((post) => <PostCard post={post} />)}
+<BaseLayout
+  title={`#${label} — Maulana Sodiqin`}
+  description={`Posts about ${label} by Maulana Sodiqin.`}
+>
+  <section class="mx-auto max-w-5xl px-6 pb-24 pt-20 sm:px-8 sm:pt-28">
+    <p
+      class="mb-10 text-xs font-medium uppercase tracking-[0.14em] text-mono-muted"
+    >
+      <a href="/tags" class="transition-colors hover:text-mono-text">Tags</a>
+    </p>
+    <h1
+      class="mb-16 text-5xl font-medium leading-[1.05] tracking-tight text-mono-text"
+    >
+      #{label}
+    </h1>
+    <SectionHeading
+      title={`${posts.length} post${posts.length === 1 ? "" : "s"}`}
+    />
+    {posts.map((post) => <PostRow post={post} />)}
+  </section>
 </BaseLayout>
-
-<style>
-  .back { color: var(--muted); font-size: 0.875rem; }
-  h1 { margin-top: 0.5rem; }
-  .count { color: var(--muted); font-size: 0.875rem; margin-bottom: 0; }
-</style>

@@ -1,28 +1,37 @@
 ---
 import BaseHead from "@/components/base-head.astro";
-import Header from "@/components/header.astro";
 import Footer from "@/components/footer.astro";
+import Header from "@/components/header.astro";
 import "@/styles/global.css";
 
 interface Props {
   title: string;
   description: string;
-  image?: string;
-  pubDate?: Date;
-  updatedDate?: Date;
+  type?: "website" | "article";
+  publishedAt?: Date;
+  updatedAt?: Date;
+  tags?: string[];
+  noindex?: boolean;
+  jsonLd?: object;
 }
 
 const props = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" data-theme="moon">
+<html lang="en">
   <head>
     <BaseHead {...props} />
   </head>
-  <body class="min-h-screen flex flex-col">
+  <body class="flex min-h-screen flex-col font-sans">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:bg-mono-text focus:px-4 focus:py-2 focus:text-mono-bg"
+    >
+      Skip to content
+    </a>
     <Header />
-    <main class="flex-1 max-w-[720px] mx-auto px-6 py-8 w-full">
+    <main id="main" class="w-full flex-1">
       <slot />
     </main>
     <Footer />
