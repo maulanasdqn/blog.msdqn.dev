@@ -8,6 +8,12 @@ export default defineConfig({
   adapter: cloudflare({ imageService: "passthrough" }),
   session: { driver: sessionDrivers.lruCache() },
   trailingSlash: "never",
+  redirects: {
+    "/blog/ts-pattern-ts-belt-effect": {
+      status: 301,
+      destination: "/blog/typescript-without-surprises",
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
   },
