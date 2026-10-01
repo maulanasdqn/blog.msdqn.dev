@@ -13,7 +13,6 @@ import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
 import type { VFile } from "vfile";
-import { monoTheme } from "@/lib/code-theme";
 import { obsidianPlugin, rehypeHighlight } from "@/lib/obsidian";
 
 export type Heading = {
@@ -31,7 +30,7 @@ let highlighter: Promise<HighlighterCore> | undefined;
 
 const getHighlighter = (): Promise<HighlighterCore> => {
   highlighter ??= createHighlighterCore({
-    themes: [monoTheme],
+    themes: [import("@shikijs/themes/vitesse-dark")],
     langs: [
       import("@shikijs/langs/typescript"),
       import("@shikijs/langs/tsx"),
@@ -95,7 +94,7 @@ export const renderMarkdown = async (
       properties: { className: ["heading-link"] },
     })
     .use(rehypeShikiFromHighlighter, await getHighlighter(), {
-      theme: "msdqn-mono",
+      theme: "vitesse-dark",
       defaultLanguage: "text",
       fallbackLanguage: "text",
     })
