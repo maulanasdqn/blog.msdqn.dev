@@ -15,7 +15,7 @@ interface Props {
 
 const { post, headings, related } = Astro.props;
 const url = `${SITE_URL}/blog/${post.slug}`;
-const title = post.metaTitle || `${post.title} — Maulana Sodiqin`;
+const title = post.metaTitle || `${post.title} | Maulana Sodiqin`;
 const description = post.metaDescription || post.excerpt || post.title;
 const updated = post.updatedAt.getTime() - post.publishedAt.getTime() > 86400000;
 

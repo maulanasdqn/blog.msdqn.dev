@@ -1,5 +1,5 @@
 export const SITE_URL = "https://blog.msdqn.dev";
-export const SITE_NAME = "Maulana Sodiqin — Writing";
+export const SITE_NAME = "Maulana Sodiqin | Writing";
 export const SITE_DESCRIPTION =
   "Notes and tutorials by Maulana Sodiqin on building web platforms with Rust and TypeScript, from backend systems to browser automation.";
 export const AUTHOR = {
