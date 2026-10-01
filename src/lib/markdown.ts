@@ -30,7 +30,7 @@ let highlighter: Promise<HighlighterCore> | undefined;
 
 const getHighlighter = (): Promise<HighlighterCore> => {
   highlighter ??= createHighlighterCore({
-    themes: [import("@shikijs/themes/vitesse-dark")],
+    themes: [import("@shikijs/themes/poimandres")],
     langs: [
       import("@shikijs/langs/typescript"),
       import("@shikijs/langs/tsx"),
@@ -94,7 +94,7 @@ export const renderMarkdown = async (
       properties: { className: ["heading-link"] },
     })
     .use(rehypeShikiFromHighlighter, await getHighlighter(), {
-      theme: "vitesse-dark",
+      theme: "poimandres",
       defaultLanguage: "text",
       fallbackLanguage: "text",
     })
