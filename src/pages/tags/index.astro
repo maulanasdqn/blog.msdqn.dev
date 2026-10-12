@@ -9,7 +9,9 @@ const tags = countTags(await listPosts());
 
 <BaseLayout
   title="Tags | Maulana Sodiqin"
-  description="Browse posts by topic."
+  description={`Browse posts by Maulana Sodiqin by topic: ${[...tags.keys()]
+    .slice(0, 8)
+    .join(", ")}.`}
   noindex={tags.size === 0}
 >
   <section class="mx-auto max-w-5xl px-6 pb-24 pt-20 sm:px-8 sm:pt-28">

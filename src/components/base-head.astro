@@ -11,10 +11,15 @@ interface Props {
   tags?: string[];
   noindex?: boolean;
   jsonLd?: object;
+  markdownUrl?: string;
+  image?: string;
+  imageAlt?: string;
 }
 
 const props = Astro.props;
 const canonical = new URL(Astro.url.pathname, SITE_URL).toString();
+const image = props.image ?? OG_IMAGE;
+const imageAlt = props.imageAlt ?? props.title;
 ---
 
 <meta charset="utf-8" />
@@ -45,10 +50,11 @@ const canonical = new URL(Astro.url.pathname, SITE_URL).toString();
 <meta property="og:description" content={props.description} />
 <meta property="og:url" content={canonical} />
 <meta property="og:locale" content="en_US" />
-<meta property="og:image" content={OG_IMAGE} />
+<meta property="og:image" content={image} />
+<meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content={props.title} />
+<meta property="og:image:alt" content={imageAlt} />
 {
   props.publishedAt && (
     <meta
@@ -65,12 +71,18 @@ const canonical = new URL(Astro.url.pathname, SITE_URL).toString();
     />
   )
 }
+{
+  props.type === "article" && (
+    <meta property="article:author" content="https://msdqn.dev/" />
+  )
+}
 {props.tags?.map((tag) => <meta property="article:tag" content={tag} />)}
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={props.title} />
 <meta name="twitter:description" content={props.description} />
-<meta name="twitter:image" content={OG_IMAGE} />
+<meta name="twitter:image" content={image} />
+<meta name="twitter:image:alt" content={imageAlt} />
 
 <link
   rel="alternate"
@@ -78,6 +90,11 @@ const canonical = new URL(Astro.url.pathname, SITE_URL).toString();
   title={SITE_NAME}
   href="/rss.xml"
 />
+{
+  props.markdownUrl && (
+    <link rel="alternate" type="text/markdown" href={props.markdownUrl} />
+  )
+}
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

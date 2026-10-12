@@ -1,11 +1,20 @@
 ---
+import AiCited from "@/components/ai-cited.astro";
 import PostRow from "@/components/post-row.astro";
 import SectionHeading from "@/components/section-heading.astro";
 import TableOfContents from "@/components/table-of-contents.astro";
 import BaseLayout from "@/layouts/base-layout.astro";
 import type { Heading } from "@/lib/markdown";
 import type { Post } from "@/lib/posts";
-import { AUTHOR, formatDate, OG_IMAGE, SITE_URL, tagSlug } from "@/lib/site";
+import {
+  AUTHOR,
+  formatDate,
+  OG_HEIGHT,
+  OG_WIDTH,
+  ogImageUrl,
+  SITE_URL,
+  tagSlug,
+} from "@/lib/site";
 
 interface Props {
   post: Post;
@@ -17,6 +26,8 @@ const { post, headings, related } = Astro.props;
 const url = `${SITE_URL}/blog/${post.slug}`;
 const title = post.metaTitle || `${post.title} | Maulana Sodiqin`;
 const description = post.metaDescription || post.excerpt || post.title;
+const image = ogImageUrl(post.slug, post.updatedAt);
+const imageAlt = `${post.title}, by Maulana Sodiqin`;
 const updated = post.updatedAt.getTime() - post.publishedAt.getTime() > 86400000;
 
 const jsonLd = {
@@ -29,15 +40,30 @@ const jsonLd = {
       description,
       url,
       mainEntityOfPage: url,
-      image: OG_IMAGE,
+      image: {
+        "@type": "ImageObject",
+        url: image,
+        width: OG_WIDTH,
+        height: OG_HEIGHT,
+        caption: imageAlt,
+      },
+      thumbnailUrl: image,
       datePublished: post.publishedAt.toISOString(),
       dateModified: post.updatedAt.toISOString(),
       keywords: post.tags.join(", "),
+      about: post.tags.map((tag) => ({ "@type": "Thing", name: tag })),
       inLanguage: "en",
       wordCount: post.content.split(/\s+/).filter(Boolean).length,
+      timeRequired: `PT${post.readTime}M`,
+      isAccessibleForFree: true,
       author: AUTHOR,
       publisher: AUTHOR,
       isPartOf: { "@id": `${SITE_URL}/#blog` },
+      encoding: {
+        "@type": "MediaObject",
+        encodingFormat: "text/markdown",
+        contentUrl: `${url}.md`,
+      },
     },
     {
       "@type": "BreadcrumbList",
@@ -58,6 +84,9 @@ const jsonLd = {
   updatedAt={post.updatedAt}
   tags={post.tags}
   jsonLd={jsonLd}
+  markdownUrl={`${url}.md`}
+  image={image}
+  imageAlt={imageAlt}
 >
   <article class="mx-auto max-w-5xl px-6 pb-20 pt-16 sm:px-8 sm:pt-24">
     <header class="max-w-3xl">
@@ -85,6 +114,15 @@ const jsonLd = {
       <div
         class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-mono-line py-4 text-sm text-mono-muted"
       >
+        <span>
+          By{" "}
+          <a
+            href={AUTHOR.url}
+            rel="author"
+            class="text-mono-subtle transition-colors hover:text-mono-text"
+            >{AUTHOR.name}</a
+          >
+        </span>
         <span>{post.readTime} min read</span>
         {
           updated && (
@@ -113,11 +151,23 @@ const jsonLd = {
           )
         }
       </div>
+      <AiCited postUrl={url} postTitle={post.title} />
     </header>
+
+    <img
+      src={image.slice(SITE_URL.length)}
+      alt={imageAlt}
+      width={OG_WIDTH}
+      height={OG_HEIGHT}
+      fetchpriority="high"
+      decoding="async"
+      class="mt-12 aspect-[1200/630] w-full border border-mono-line bg-mono-line"
+    />
 
     <div class="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_220px]">
       <div class="prose prose-mono min-w-0 max-w-3xl">
         <slot />
+        <AiCited postUrl={url} postTitle={post.title} />
       </div>
       <aside class="hidden lg:block">
         <div class="sticky top-24">

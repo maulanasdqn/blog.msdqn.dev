@@ -18,6 +18,9 @@ Post bodies are Markdown with GFM tables and task lists, Obsidian callouts (`> [
 | `/search?q=` | Full-text search over title, excerpt, content and tags |
 | `/rss.xml` | RSS feed, also read by msdqn.dev |
 | `/sitemap.xml` | Sitemap |
+| `/og/:slug.png` | Generated 1200×630 social and cover image per post (Satori + resvg, cached by `updated_at`) |
+| `/blog/:slug.md` | Post as plain Markdown, for LLMs and AI crawlers |
+| `/llms.txt`, `/llms-full.txt` | Post index and full text for language models ([llmstxt.org](https://llmstxt.org)) |
 
 ## Commands
 

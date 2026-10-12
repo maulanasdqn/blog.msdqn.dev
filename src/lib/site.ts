@@ -13,7 +13,13 @@ export const AUTHOR = {
     "https://github.com/maulanasdqn",
   ],
 };
+export const MIN_INDEXED_TAG_POSTS = 2;
 export const OG_IMAGE = `${SITE_URL}/og-image.png`;
+export const OG_WIDTH = 1200;
+export const OG_HEIGHT = 630;
+
+export const ogImageUrl = (slug: string, updatedAt: Date): string =>
+  `${SITE_URL}/og/${slug}.png?v=${Math.floor(updatedAt.getTime() / 1000)}`;
 
 export const tagSlug = (tag: string): string =>
   tag

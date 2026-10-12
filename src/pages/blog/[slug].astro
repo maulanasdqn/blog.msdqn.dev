@@ -13,6 +13,8 @@ const [{ html, headings }, posts] = await Promise.all([
   renderMarkdown(`${post.slug}:${post.updatedAt.getTime()}`, post.content),
   listPosts(),
 ]);
+
+Astro.response.headers.set("Last-Modified", post.updatedAt.toUTCString());
 ---
 
 <PostLayout post={post} headings={headings} related={relatedPosts(post, posts)}>

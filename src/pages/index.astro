@@ -3,25 +3,55 @@ import PostRow from "@/components/post-row.astro";
 import SectionHeading from "@/components/section-heading.astro";
 import BaseLayout from "@/layouts/base-layout.astro";
 import { listPosts } from "@/lib/posts";
-import { AUTHOR, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import {
+  AUTHOR,
+  ogImageUrl,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/site";
 
 const posts = await listPosts();
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "Blog",
-  "@id": `${SITE_URL}/#blog`,
-  url: `${SITE_URL}/`,
-  name: SITE_NAME,
-  description: SITE_DESCRIPTION,
-  inLanguage: "en",
-  author: AUTHOR,
-  blogPost: posts.map((post) => ({
-    "@type": "BlogPosting",
-    headline: post.title,
-    url: `${SITE_URL}/blog/${post.slug}`,
-    datePublished: post.publishedAt.toISOString(),
-  })),
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: `${SITE_URL}/`,
+      name: SITE_NAME,
+      description: SITE_DESCRIPTION,
+      inLanguage: "en",
+      publisher: { "@id": AUTHOR["@id"] },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${SITE_URL}/search?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "Blog",
+      "@id": `${SITE_URL}/#blog`,
+      url: `${SITE_URL}/`,
+      name: SITE_NAME,
+      description: SITE_DESCRIPTION,
+      inLanguage: "en",
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+      author: AUTHOR,
+      blogPost: posts.map((post) => ({
+        "@type": "BlogPosting",
+        headline: post.title,
+        description: post.metaDescription || post.excerpt || undefined,
+        url: `${SITE_URL}/blog/${post.slug}`,
+        datePublished: post.publishedAt.toISOString(),
+        dateModified: post.updatedAt.toISOString(),
+        keywords: post.tags.join(", "),
+        image: ogImageUrl(post.slug, post.updatedAt),
+        author: { "@id": AUTHOR["@id"] },
+      })),
+    },
+  ],
 };
 ---
 

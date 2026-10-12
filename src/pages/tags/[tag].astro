@@ -3,7 +3,7 @@ import PostRow from "@/components/post-row.astro";
 import SectionHeading from "@/components/section-heading.astro";
 import BaseLayout from "@/layouts/base-layout.astro";
 import { listPosts, postsWithTag } from "@/lib/posts";
-import { tagSlug } from "@/lib/site";
+import { MIN_INDEXED_TAG_POSTS, SITE_URL, tagSlug } from "@/lib/site";
 
 const slug = Astro.params.tag ?? "";
 const posts = postsWithTag(await listPosts(), slug);
@@ -13,11 +13,51 @@ if (posts.length === 0) {
 }
 
 const label = posts[0].tags.find((tag) => tagSlug(tag) === slug) ?? slug;
+const url = `${SITE_URL}/tags/${slug}`;
+const description = `${posts.length} post${posts.length === 1 ? "" : "s"} about ${label} by Maulana Sodiqin: ${posts
+  .slice(0, 3)
+  .map((post) => post.title)
+  .join("; ")}.`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#page`,
+      url,
+      name: `#${label}`,
+      description,
+      inLanguage: "en",
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+      about: { "@type": "Thing", name: label },
+      mainEntity: {
+        "@type": "ItemList",
+        itemListElement: posts.map((post, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${SITE_URL}/blog/${post.slug}`,
+          name: post.title,
+        })),
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Writing", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 2, name: "Tags", item: `${SITE_URL}/tags` },
+        { "@type": "ListItem", position: 3, name: `#${label}`, item: url },
+      ],
+    },
+  ],
+};
 ---
 
 <BaseLayout
   title={`#${label} | Maulana Sodiqin`}
-  description={`Posts about ${label} by Maulana Sodiqin.`}
+  description={description}
+  jsonLd={jsonLd}
+  noindex={posts.length < MIN_INDEXED_TAG_POSTS}
 >
   <section class="mx-auto max-w-5xl px-6 pb-24 pt-20 sm:px-8 sm:pt-28">
     <p
